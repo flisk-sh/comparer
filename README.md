@@ -25,7 +25,7 @@ Sites made from it: [cmd.flisk.sh](https://cmd.flisk.sh) ([flisk-sh/command-comp
 ## Use this template
 
 1. Click **Use this template**, or run `gh repo create my-comparer --template flisk-sh/comparer --public --clone`.
-2. Open `_config.yml`: set `url`, `baseurl` and `repo_url`.
+2. Open `_config.yml`: set `title`, `home_title` (the homepage title, "<title>: <what it does>"), `url`, `baseurl` and `repo_url`.
 3. Open `_data/meta.yml`: name your primary tool and the maintainer.
 4. Replace the sample tools, tabs and rows in `_data/` (format below).
 5. Run `ruby scripts/check-data.rb` until it says OK.
