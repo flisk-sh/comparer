@@ -15,6 +15,8 @@ lang: en
 url: "https://flisk-sh.github.io"
 baseurl: "/comparer"
 
+# Flisk Analytics: the domain this site is registered under at analytics.flisk.si. Remove the line to turn it off.
+analytics_domain: "flisk-sh.github.io"
 repo_url: "https://github.com/flisk-sh/comparer"
 
 markdown: kramdown
