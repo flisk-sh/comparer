@@ -18,7 +18,7 @@ PAGES = {
 }
 
 
-def write_fixture(directory, locations):
+def write_fixture(directory, locations, pages=PAGES):
     site = Path(directory)
     urls = "".join(f"<url><loc>{location}</loc></url>" for location in locations)
     (site / "sitemap.xml").write_text(
@@ -26,7 +26,7 @@ def write_fixture(directory, locations):
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls + "</urlset>",
         encoding="utf-8",
     )
-    for relative, canonical in PAGES.items():
+    for relative, canonical in pages.items():
         path = site / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f'<html><head><link rel="canonical" href="{canonical}"></head></html>', encoding="utf-8")
@@ -50,6 +50,14 @@ class SitemapTest(unittest.TestCase):
             write_fixture(directory, [PAGES[key] for key in ("index.html", "about/index.html", "pick/index.html", "extras/index.html")])
             self.assertEqual(validate_site(directory), [])
 
+    def test_sitemap_supports_configurable_domain_and_base_path(self):
+        for base in ("https://compare.example.org", "https://example.github.io/command-table"):
+            with self.subTest(base=base), tempfile.TemporaryDirectory() as directory:
+                pages = {path: url.replace(BASE, base, 1) for path, url in PAGES.items()}
+                locations = [url for path, url in pages.items() if path != "404.html"]
+                write_fixture(directory, locations, pages)
+                self.assertEqual(validate_site(directory), [])
+
     def test_404_and_missing_page_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             write_fixture(directory, [PAGES["index.html"], PAGES["404.html"]])
@@ -62,7 +70,10 @@ class SitemapTest(unittest.TestCase):
             write_fixture(directory, [PAGES["index.html"], PAGES["index.html"], "https://flisk-sh.github.io/about/"])
             problems = validate_site(directory)
         self.assertTrue(any("more than once" in problem for problem in problems))
-        self.assertTrue(any("base path" in problem for problem in problems))
+        self.assertIn(
+            "sitemap.xml address https://flisk-sh.github.io/about/ has no matching canonical link",
+            problems,
+        )
 
 
 if __name__ == "__main__":

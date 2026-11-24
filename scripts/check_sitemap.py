@@ -54,8 +54,6 @@ def validate_site(site_dir):
         problems.append("sitemap.xml lists no pages")
     if len(locations) != len(set(locations)):
         problems.append("sitemap.xml lists a page more than once")
-    if any("/comparer" not in location for location in locations):
-        problems.append("sitemap.xml addresses must include the /comparer base path")
     if any("404" in location for location in locations):
         problems.append("sitemap.xml must not list the 404 page")
 
